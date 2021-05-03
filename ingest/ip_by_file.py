@@ -28,7 +28,6 @@ def ip_parser(filename):
         for match in raw_ip_list:
             if re.search(validation, match):
                 ips_list.append(match)
-
         return ips_list
 
 

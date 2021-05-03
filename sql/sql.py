@@ -31,14 +31,19 @@ def create_db():
 
 
 def insertions_ip(list_of_ips):
+    connection = ''
     try:
         connection = sqlite3.connect("ipdata.db")
         cursor = connection.cursor()
 
+        cursor.execute("BEGIN TRANSACTION;")
+
         for ip in list_of_ips:
             cursor.execute('INSERT INTO rdap VALUES (?, ?, ?, ?)', (ip, '', '', ''))
-            connection.commit()
+
+        cursor.execute("COMMIT;")
         print("IP INSERTION DONE")
+
     except sqlite3.Error as error:
         print("Failed to insert IP Address", error)
     finally:
@@ -47,6 +52,7 @@ def insertions_ip(list_of_ips):
 
 
 def insert_rdap():
+    connection = ''
     try:
         connection = sqlite3.connect("ipdata.db")
         cursor = connection.cursor()
@@ -76,6 +82,7 @@ def insert_rdap():
 
 
 def insert_geo_ip():
+    connection = ''
     try:
         connection = sqlite3.connect("ipdata.db")
         cursor = connection.cursor()
@@ -118,3 +125,9 @@ def query_geoip():
     result = cursor.fetchall()
     connection.close()
     return result
+
+
+if __name__ == "__main__":
+    file = "./test_data/list_of_ips.txt"
+    create_db()
+    insertions_ip(file)
