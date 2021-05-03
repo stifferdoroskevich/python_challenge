@@ -1,5 +1,6 @@
 from lookup import rdap, geoip
 import sqlite3
+import requests
 
 
 def create_db():
@@ -56,14 +57,19 @@ def insert_rdap():
                                   range_upper = ?
                               WHERE ipaddr = ?;'''
 
-        for ip in ip_list:
-            data = rdap.get_rdap_info(ip[0])
-            if data != None:
-                cursor.execute(sql_update, (data[0], data[1], data[2], data[3]))
-                connection.commit()
+        # Session reduces by 45 % time for bulk requests
+        rdap_session = requests.Session()
+        with rdap_session:
+            for ip in ip_list:
+                data = rdap.get_rdap_info(ip[0], rdap_session)
+                if data != None:
+                    cursor.execute(sql_update, (data[0], data[1], data[2], data[3]))
+                    connection.commit()
         print("RDAP UPDATE DONE")
+
     except sqlite3.Error as error:
         print("Failed to update IP Address. ->", error)
+
     finally:
         if connection:
             connection.close()
@@ -77,14 +83,20 @@ def insert_geo_ip():
         sql_insert = '''INSERT INTO geoip VALUES
                                (?, ?, ?, ?, ?, ?)
                                '''
-        for ip in ip_list:
-            data = geoip.get_geoip_info(ip[0])
-            if data != None:
-                cursor.execute(sql_insert, (data[0], data[1], data[2], data[3], data[4], data[5]))
-                connection.commit()
+
+        # Session reduces by 45 % time for bulk requests
+        geoip_session = requests.Session()
+        with geoip_session:
+            for ip in ip_list:
+                data = geoip.get_geoip_info(ip[0], geoip_session)
+                if data != None:
+                    cursor.execute(sql_insert, (data[0], data[1], data[2], data[3], data[4], data[5]))
+                    connection.commit()
         print("GEOIP INSERT DONE")
+
     except sqlite3.Error as error:
         print("Failed to insert IP Address Geo Location. ->", error)
+
     finally:
         if connection:
             connection.close()

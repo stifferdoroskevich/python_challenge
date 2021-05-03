@@ -21,6 +21,7 @@ Program focused on retrieving and parsing RDAP data and Geolocation for IPv4 add
 # Clone this repository
 $ https://github.com/stifferdoroskevich/python_challenge.git
 $ cd python_challenge
+
 # Create Virtual enviroment
 $ python3 -m venv venv
 $ source venv/bin/activate

@@ -1,8 +1,8 @@
 import requests
 
 
-def get_geoip_info(ip):
-    geoip_request = requests.get(f"http://ipwhois.app/json/{ip}")
+def get_geoip_info(ip, session):
+    geoip_request = session.get(f"http://ipwhois.app/json/{ip}")
     # geoip_request = requests.get(f"http://api.ipgeolocationapi.com/geolocate/{ip}")  (Alternative)
 
     if geoip_request.ok:
@@ -21,4 +21,5 @@ def get_geoip_info(ip):
 
 if __name__ == "__main__":
     test_ip = "45.170.129.202"
-    print(get_geoip_info(test_ip))
+    s = requests.Session()
+    print(get_geoip_info(test_ip, s))

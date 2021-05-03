@@ -1,5 +1,5 @@
 from ingest import ip_by_file
-from database import sql
+from sql import sql
 
 
 returned_list = ip_by_file.ip_parser('./test_data/list_of_ips_small.txt')
