@@ -30,8 +30,10 @@ $ source venv/bin/activate
 $ pip install --upgrade pip
 $ pip install -r requirements.txt
 
-$ run python main_validator.py
-Select one of the five options
+# Run the main function "main_validator.py"
+$ python main_validator.py
+
+# Select one of the five options
 1. Populate Database with small dataset
 2. Populate Database with full dataset
 3. Populate Database with file
@@ -40,7 +42,7 @@ Select one of the five options
 
 To pass directly a file.
 Put the file inside the "test_data" folder and run:
-python main_validator.py --file ["replace_this.txt"]
+$ python main_validator.py --file ["name_of_the_file.txt"]
 
 
 ``` 
