@@ -1,0 +1,4 @@
+venv
+ipdata.db
+.idea/
+__pycache__/
