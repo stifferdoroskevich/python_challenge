@@ -72,9 +72,17 @@ def insert_rdap():
                     cursor.execute(sql_update, (data[0], data[1], data[2], data[3]))
                     connection.commit()
         print("RDAP UPDATE DONE")
-
+    
+    except requests.exceptions.HTTPError as errh:
+        print(errh)
+    except requests.exceptions.ConnectionError as errc:
+        print(errc)
+    except requests.exceptions.Timeout as errt:
+        print(errt)
+    except requests.exceptions.RequestException as err:
+        print(err)
     except sqlite3.Error as error:
-        print("Failed to update IP Address. ->", error)
+        print(error)
 
     finally:
         if connection:
@@ -101,6 +109,14 @@ def insert_geo_ip():
                     connection.commit()
         print("GEOIP INSERT DONE")
 
+    except requests.exceptions.HTTPError as errh:
+        print(errh)
+    except requests.exceptions.ConnectionError as errc:
+        print(errc)
+    except requests.exceptions.Timeout as errt:
+        print(errt)
+    except requests.exceptions.RequestException as err:
+        print(err)
     except sqlite3.Error as error:
         print("Failed to insert IP Address Geo Location. ->", error)
 
