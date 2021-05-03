@@ -30,4 +30,17 @@ $ source venv/bin/activate
 $ pip install --upgrade pip
 $ pip install -r requirements.txt
 
+$ run python main_validator.py
+Select one of the five options
+1. Populate Database with small dataset
+2. Populate Database with full dataset
+3. Populate Database with file
+4. Return All IP Rdap Information
+5. Return All IP Geolocation
+
+To pass directly a file.
+Put the file inside the "test_data" folder and run:
+python main_validator.py --file ["replace_this.txt"]
+
+
 ``` 

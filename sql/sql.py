@@ -36,11 +36,12 @@ def insertions_ip(list_of_ips):
         connection = sqlite3.connect("ipdata.db")
         cursor = connection.cursor()
 
-        cursor.execute("BEGIN TRANSACTION;")
+        cursor.execute("DELETE FROM RDAP;")
+        cursor.execute("COMMIT;")
 
+        cursor.execute("BEGIN TRANSACTION;")
         for ip in list_of_ips:
             cursor.execute('INSERT INTO rdap VALUES (?, ?, ?, ?)', (ip, '', '', ''))
-
         cursor.execute("COMMIT;")
         print("IP INSERTION DONE")
 
@@ -94,6 +95,10 @@ def insert_geo_ip():
     try:
         connection = sqlite3.connect("ipdata.db")
         cursor = connection.cursor()
+
+        cursor.execute("DELETE FROM GEOIP;")
+        cursor.execute("COMMIT;")
+
         ip_list = cursor.execute("Select ipaddr from rdap").fetchall()
         sql_insert = '''INSERT INTO geoip VALUES
                                (?, ?, ?, ?, ?, ?)
