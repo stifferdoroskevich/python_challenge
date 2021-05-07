@@ -30,8 +30,8 @@ $ source venv/bin/activate
 $ pip install --upgrade pip
 $ pip install -r requirements.txt
 
-# Run the main function "main_validator.py"
-$ python main_validator.py
+# Run the main function "main.py"
+$ python main.py
 
 # Select one of the five options
 1. Populate Database with small dataset
@@ -39,6 +39,7 @@ $ python main_validator.py
 3. Populate Database with file
 4. Return All IP Rdap Information
 5. Return All IP Geolocation
+6. Clean All Data from Database
 
 To pass directly a file.
 Put the file inside the "test_data" folder and run:

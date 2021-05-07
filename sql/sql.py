@@ -1,43 +1,31 @@
 from lookup import rdap, geoip
+from sql import db_sqls
 import sqlite3
 import requests
 
 
 def create_db():
-    connection = sqlite3.connect("ipdata.db")
-    cursor = connection.cursor()
-
-    cursor.execute('''CREATE TABLE IF NOT EXISTS rdap
-                          (ipaddr TEXT NOT NULL PRIMARY KEY,
-                           range_lower TEXT,
-                           range_upper TEXT,
-                           CIDR TEXT)                   
-                           ''')
+    connection, cursor = db_connect()
+    db_sqls.create_tables(cursor)
     connection.commit()
-
-    cursor.execute('''CREATE TABLE IF NOT EXISTS geoip
-                          (ipaddr TEXT,
-                           country TEXT,
-                           city TEXT,
-                           latitude REAL,
-                           longitude REAL,
-                           isp TEXT,
-                           FOREIGN KEY (ipaddr)
-                               REFERENCES rdap (ipaddr))
-                           ''')
-    connection.commit()
-
     connection.close()
 
 
-def insertions_ip(list_of_ips):
-    connection = ''
-    try:
-        connection = sqlite3.connect("ipdata.db")
-        cursor = connection.cursor()
+def db_connect():
+    '''
+    Connection to database.
+    Creates ipdata.db SQLite File.
+    :return:
+    tuple: connection, cursor
+    '''
+    connection = sqlite3.connect("ipdata.db")
+    cursor = connection.cursor()
+    return connection, cursor
 
-        cursor.execute("DELETE FROM RDAP;")
-        cursor.execute("COMMIT;")
+
+def insertions_ip(list_of_ips):
+    try:
+        connection, cursor = db_connect()
 
         cursor.execute("BEGIN TRANSACTION;")
         for ip in list_of_ips:
@@ -53,23 +41,21 @@ def insertions_ip(list_of_ips):
 
 
 def insert_rdap():
-    connection = ''
     try:
-        connection = sqlite3.connect("ipdata.db")
-        cursor = connection.cursor()
-        ip_list = cursor.execute("Select ipaddr from rdap").fetchall()
+        connection, cursor = db_connect()
+        ip_list = db_sqls.get_ips(cursor)
         sql_update = '''UPDATE rdap
                               SET CIDR = ?,
                                   range_lower = ?, 
                                   range_upper = ?
                               WHERE ipaddr = ?;'''
 
-        # Session reduces by 45 % time for bulk requests
+        # Session reduced by 45 % time for bulk requests
         rdap_session = requests.Session()
         with rdap_session:
             for ip in ip_list:
                 data = rdap.get_rdap_info(ip[0], rdap_session)
-                if data != None:
+                if data is not None:
                     cursor.execute(sql_update, (data[0], data[1], data[2], data[3]))
                     connection.commit()
         print("RDAP UPDATE DONE")
@@ -91,25 +77,20 @@ def insert_rdap():
 
 
 def insert_geo_ip():
-    connection = ''
     try:
-        connection = sqlite3.connect("ipdata.db")
-        cursor = connection.cursor()
+        connection, cursor = db_connect()
 
-        cursor.execute("DELETE FROM GEOIP;")
-        cursor.execute("COMMIT;")
-
-        ip_list = cursor.execute("Select ipaddr from rdap").fetchall()
+        ip_list = db_sqls.get_ips(cursor)
         sql_insert = '''INSERT INTO geoip VALUES
                                (?, ?, ?, ?, ?, ?)
                                '''
 
-        # Session reduces by 45 % time for bulk requests
+        # Session reduced by 45 % time for bulk requests
         geoip_session = requests.Session()
         with geoip_session:
             for ip in ip_list:
                 data = geoip.get_geoip_info(ip[0], geoip_session)
-                if data != None:
+                if data is not None:
                     cursor.execute(sql_insert, (data[0], data[1], data[2], data[3], data[4], data[5]))
                     connection.commit()
         print("GEOIP INSERT DONE")
@@ -131,8 +112,7 @@ def insert_geo_ip():
 
 
 def query_rdap():
-    connection = sqlite3.connect("ipdata.db")
-    cursor = connection.cursor()
+    connection, cursor = db_connect()
     cursor.execute("Select * from rdap")
     result = cursor.fetchall()
     connection.close()
@@ -140,15 +120,22 @@ def query_rdap():
 
 
 def query_geoip():
-    connection = sqlite3.connect("ipdata.db")
-    cursor = connection.cursor()
+    connection, cursor = db_connect()
     cursor.execute("Select * from geoip")
     result = cursor.fetchall()
     connection.close()
     return result
 
 
+def clean_database():
+    connection, cursor = db_connect()
+    cursor.executescript("DELETE FROM RDAP; DELETE FROM GEOIP;")
+    connection.close()
+    return "Database Cleaned"
+
+
 if __name__ == "__main__":
-    file = "./test_data/list_of_ips.txt"
+    file = "./test_data/list_of_ips_small.txt"
     create_db()
     insertions_ip(file)
+    insert_rdap()

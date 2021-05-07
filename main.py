@@ -11,9 +11,10 @@ def options_selector():
             3. Populate Database with file
             4. Return All IP Rdap Information
             5. Return All IP Geolocation
+            6. Clean Database
             (Answer with the number option)\n
             """)
-        if decision in '12345':
+        if decision in '123456':
             return decision
         elif decision == 'exit':
             break
@@ -58,6 +59,8 @@ def main():
         print(sql.query_rdap())
     elif decision == "5":
         print(sql.query_geoip())
+    elif decision == "6":
+        print(sql.clean_database())
 
 
 if __name__ == "__main__":
