@@ -6,11 +6,7 @@ def get_rdap_info(ip, session):
 
     if rdap_request.ok:
         data_dict = rdap_request.json()
-        start_address = data_dict['startAddress']
-        end_address = data_dict['endAddress']
-        cidr = data_dict['handle']
-
-        return [cidr, start_address, end_address, ip]
+        return data_dict
 
 
 if __name__ == '__main__':
