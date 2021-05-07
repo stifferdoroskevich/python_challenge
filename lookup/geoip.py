@@ -10,11 +10,7 @@ def get_geoip_info(ip, session):
         city = data_dict['city']
 
         if city:
-            country = data_dict['country']
-            latitude = data_dict['latitude']
-            longitude = data_dict['longitude']
-            isp = data_dict['isp']
-            return [ip, country, city, latitude, longitude, isp]
+            return data_dict
 
         return [ip, '', '', '', '', '']
 

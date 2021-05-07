@@ -52,11 +52,12 @@ def insert_rdap():
 
         # Session reduced by 45 % time for bulk requests
         rdap_session = requests.Session()
+
         with rdap_session:
             for ip in ip_list:
                 data = rdap.get_rdap_info(ip[0], rdap_session)
                 if data is not None:
-                    cursor.execute(sql_update, (data[0], data[1], data[2], data[3]))
+                    cursor.execute(sql_update, (data['handle'], data['startAddress'], data['endAddress'], ip[0]))
                     connection.commit()
         print("RDAP UPDATE DONE")
     
@@ -91,7 +92,8 @@ def insert_geo_ip():
             for ip in ip_list:
                 data = geoip.get_geoip_info(ip[0], geoip_session)
                 if data is not None:
-                    cursor.execute(sql_insert, (data[0], data[1], data[2], data[3], data[4], data[5]))
+                    cursor.execute(sql_insert, (ip[0],  data['country'], data['city'],
+                                                data['latitude'], data['longitude'], data['isp']))
                     connection.commit()
         print("GEOIP INSERT DONE")
 
