@@ -12,7 +12,14 @@ def get_geoip_info(ip, session):
         if city:
             return data_dict
 
-        return [ip, '', '', '', '', '']
+        data_dict['ip'] = ip
+        data_dict['country'] = ''
+        data_dict['city'] = ''
+        data_dict['latitude'] = ''
+        data_dict['longitude'] = ''
+        data_dict['isp'] = ''
+
+        return data_dict
 
 
 if __name__ == "__main__":
